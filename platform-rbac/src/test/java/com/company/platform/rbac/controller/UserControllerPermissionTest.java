@@ -1,5 +1,8 @@
 package com.company.platform.rbac.controller;
 
+import com.company.platform.rbac.security.JwtTokenService;
+import com.company.platform.rbac.security.PlatformUserDetailsService;
+import com.company.platform.rbac.security.TokenBlacklistService;
 import com.company.platform.rbac.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,15 @@ class UserControllerPermissionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private JwtTokenService jwtTokenService;
+
+    @MockBean
+    private PlatformUserDetailsService platformUserDetailsService;
+
+    @MockBean
+    private TokenBlacklistService tokenBlacklistService;
 
     @MockBean
     private UserService userService;
