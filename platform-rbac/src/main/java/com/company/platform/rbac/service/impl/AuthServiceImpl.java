@@ -14,6 +14,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+/**
+ * 认证服务实现，负责登录、刷新令牌与登出。
+ * <p>边界：仅处理认证流程编排，不直接访问数据库；依赖 Spring Security 认证管理器、JWT 服务和 Redis 黑名单服务。</p>
+ */
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -34,6 +38,13 @@ public class AuthServiceImpl implements AuthService {
         this.tokenBlacklistService = tokenBlacklistService;
     }
 
+    /**
+     * 使用用户名和密码完成认证并签发访问令牌/刷新令牌。
+     *
+     * @param request 登录请求，包含用户名与明文密码
+     * @return 包含 access token 与 refresh token 的响应对象
+     * @throws org.springframework.security.core.AuthenticationException 当用户名或密码错误时抛出
+     */
     @Override
     public TokenResponse login(LoginRequest request) {
         Authentication authentication = authenticationManager.authenticate(
@@ -46,13 +57,22 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    /**
+     * 校验刷新令牌并重新签发新的一对令牌。
+     *
+     * @param refreshToken 客户端传入的刷新令牌
+     * @return 新签发的访问令牌与刷新令牌
+     * @throws BusinessException 当令牌类型非法、令牌已失效或命中黑名单时抛出未授权异常
+     */
     @Override
     public TokenResponse refresh(String refreshToken) {
         String tokenType = jwtTokenService.getTokenType(refreshToken);
+        // 仅允许使用 refresh token 换取新令牌，防止 access token 越权刷新。
         if (!JwtTokenService.TOKEN_TYPE_REFRESH.equals(tokenType)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
         String tokenId = jwtTokenService.getTokenId(refreshToken);
+        // 黑名单用于实现主动注销与风控失效，命中即拒绝。
         if (tokenBlacklistService.isBlacklisted(tokenId)) {
             throw new BusinessException(ErrorCode.UNAUTHORIZED);
         }
@@ -65,6 +85,11 @@ public class AuthServiceImpl implements AuthService {
         );
     }
 
+    /**
+     * 注销当前登录令牌，将其 tokenId 写入黑名单直到自然过期。
+     *
+     * @param bearerToken Authorization 请求头，格式为 {@code Bearer <token>}
+     */
     @Override
     public void logout(String bearerToken) {
         if (bearerToken == null || bearerToken.isBlank() || !bearerToken.startsWith("Bearer ")) {
