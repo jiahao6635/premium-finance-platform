@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:mysql://mysql-prod:3306/premium_finance_platform?useSSL=true&serverTimezone=UTC
+    username: prod_user
+    password: change_me
+  data:
+    redis:
+      host: redis-prod
+      port: 6379

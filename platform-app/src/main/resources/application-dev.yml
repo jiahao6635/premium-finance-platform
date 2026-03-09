@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://mysql-dev:3306/premium_finance_platform?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: dev_user
+    password: dev_password
+  data:
+    redis:
+      host: redis-dev
+      port: 6379

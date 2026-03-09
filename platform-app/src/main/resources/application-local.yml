@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: local
+  datasource:
+    url: jdbc:mysql://localhost:3306/premium_finance_platform?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379

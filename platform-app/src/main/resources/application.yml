@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: premium-finance-platform
+  datasource:
+    url: jdbc:mysql://localhost:3306/premium_finance_platform?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+platform:
+  security:
+    jwt:
+      issuer: premium-finance-platform
+      secret: ChangeThisSecretKeyToAStrongOneForProduction123456
+      access-token-expire-seconds: 1800
+      refresh-token-expire-seconds: 604800
+  job:
+    xxl:
+      enabled: false
+      admin-addresses: http://localhost:8080/xxl-job-admin
+      app-name: platform-job-executor
+  mq:
+    rocket:
+      enabled: false
+      demo-topic: platform.demo.topic
+      producer-group: platform-demo-producer
+      consumer-group: platform-demo-consumer
+
+rocketmq:
+  name-server: 127.0.0.1:9876
+  producer:
+    group: ${platform.mq.rocket.producer-group}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,env
+  endpoint:
+    health:
+      show-details: always
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
