@@ -1,0 +1,28 @@
+spring:
+  config:
+    activate:
+      on-profile: ci
+  datasource:
+    url: jdbc:h2:mem:pfp_ci;MODE=MySQL;DATABASE_TO_LOWER=TRUE;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password: ''
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      database: 0
+  autoconfigure:
+    exclude:
+      - org.redisson.spring.starter.RedissonAutoConfigurationV2
+
+platform:
+  job:
+    xxl:
+      enabled: false
+  mq:
+    rocket:
+      enabled: false
+
+rocketmq:
+  name-server: 127.0.0.1:9876

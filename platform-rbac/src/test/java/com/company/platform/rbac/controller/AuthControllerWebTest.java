@@ -2,6 +2,9 @@ package com.company.platform.rbac.controller;
 
 import com.company.platform.rbac.model.dto.LoginRequest;
 import com.company.platform.rbac.model.dto.TokenResponse;
+import com.company.platform.rbac.security.JwtTokenService;
+import com.company.platform.rbac.security.PlatformUserDetailsService;
+import com.company.platform.rbac.security.TokenBlacklistService;
 import com.company.platform.rbac.service.AuthService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -27,6 +30,15 @@ class AuthControllerWebTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private JwtTokenService jwtTokenService;
+
+    @MockBean
+    private PlatformUserDetailsService platformUserDetailsService;
+
+    @MockBean
+    private TokenBlacklistService tokenBlacklistService;
 
     @MockBean
     private AuthService authService;

@@ -18,6 +18,15 @@
 - `platform-infra-job`: XXL-JOB integration (conditional)
 - `platform-infra-mq`: RocketMQ integration (conditional)
 
+## CI quality gate (merge criteria)
+以下门禁必须全部通过，PR 才可合并：
+- 编译与单测：`mvn -B -ntp clean verify`
+- `platform-app` 启动冒烟（`ci` profile）：`mvn -B -ntp -pl platform-app -am -Dspring.profiles.active=ci -Dtest=PlatformApplicationSmokeTest -Dsurefire.failIfNoSpecifiedTests=false test`
+
+CI 中 `platform-app` 使用 `ci` profile 进行最小依赖启动校验：
+- MySQL 使用 H2 内存数据库（MySQL 兼容模式）
+- Redis 连接改为 CI 可控配置，并关闭 Redisson 自动装配，避免依赖本地 Redis 进程
+
 ## Local bootstrap
 1. Create MySQL database `premium_finance_platform`.
 2. Run SQL scripts in order:
