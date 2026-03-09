@@ -16,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * 权限点管理控制器。
+ */
 @RestController
 @RequestMapping("/api/rbac/permissions")
 public class PermissionController {
@@ -26,24 +29,36 @@ public class PermissionController {
         this.permissionService = permissionService;
     }
 
+    /**
+     * 查询权限列表。
+     */
     @GetMapping
     @PreAuthorize("hasAuthority('perm:read')")
     public ApiResponse<List<PermissionEntity>> list() {
         return ApiResponse.success(permissionService.list());
     }
 
+    /**
+     * 创建权限点。
+     */
     @PostMapping
     @PreAuthorize("hasAuthority('perm:write')")
     public ApiResponse<PermissionEntity> create(@RequestBody @Valid PermissionUpsertRequest request) {
         return ApiResponse.success(permissionService.create(request));
     }
 
+    /**
+     * 更新权限点。
+     */
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('perm:write')")
     public ApiResponse<PermissionEntity> update(@PathVariable Long id, @RequestBody @Valid PermissionUpsertRequest request) {
         return ApiResponse.success(permissionService.update(id, request));
     }
 
+    /**
+     * 删除权限点。
+     */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('perm:write')")
     public ApiResponse<Void> delete(@PathVariable Long id) {

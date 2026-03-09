@@ -15,6 +15,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+/**
+ * JWT 鉴权过滤器，在请求进入业务控制器前完成令牌校验与认证上下文注入。
+ * <p>边界：仅处理 access token，不处理 refresh token 的换发逻辑。</p>
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -35,6 +39,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * 执行 JWT 解析与安全上下文设置。
+     *
+     * @param request 当前请求
+     * @param response 当前响应
+     * @param filterChain 过滤器链
+     * @throws ServletException Servlet 过滤异常
+     * @throws IOException I/O 异常
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
         throws ServletException, IOException {
@@ -43,8 +56,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (StringUtils.hasText(bearer) && bearer.startsWith("Bearer ")) {
                 String token = bearer.substring(7);
                 String tokenType = jwtTokenService.getTokenType(token);
+                // 仅接受 access token 进入资源访问链路，refresh token 不可用于接口访问。
                 if (JwtTokenService.TOKEN_TYPE_ACCESS.equals(tokenType)) {
                     String tokenId = jwtTokenService.getTokenId(token);
+                    // 黑名单命中表示已注销或被风控吊销，禁止继续认证。
                     if (!tokenBlacklistService.isBlacklisted(tokenId)) {
                         String username = jwtTokenService.getUsername(token);
                         PlatformUserDetails details = (PlatformUserDetails) userDetailsService.loadUserByUsername(username);
